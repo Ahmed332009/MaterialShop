@@ -2,7 +2,7 @@ package dev.materialshop;
 
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.permissions.PermissionAttachmentInfo;
@@ -41,7 +41,7 @@ public final class SettingsService {
 
     public void reload() {
         plugin.reloadConfig();
-        YamlConfiguration cfg = plugin.getConfig();
+        FileConfiguration cfg = plugin.getConfig();
         shopLimit = Math.max(1, cfg.getInt("shop-limit", 5));
         collectRows = Math.max(1, Math.min(6, cfg.getInt("collect-box-rows", 6)));
         promptTicks = Math.max(5, cfg.getInt("chat-timeout-seconds", 30)) * 20;

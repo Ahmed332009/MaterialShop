@@ -217,4 +217,22 @@ public final class ShopManager {
         }
         save(shop);
     }
+
+    /** Last-resort return path when both the chest and collect box are full. */
+    private void drop(ItemStack item) {
+        Location at = shopLocationOrSpawn();
+        at.getWorld().dropItemNaturally(at, item);
+        plugin.getLogger().warning("Shop overflow returned as a dropped item at "
+                + at.getWorld().getName() + " " + at.getBlockX() + ", " + at.getBlockY() + ", "
+                + at.getBlockZ() + ": " + Items.describe(item, item.getAmount()));
+    }
+
+    private Location shopLocationOrSpawn() {
+        for (Shop shop : all()) {
+            if (shop.location() != null) {
+                return shop.location();
+            }
+        }
+        return plugin.getServer().getWorlds().get(0).getSpawnLocation();
+    }
 }
