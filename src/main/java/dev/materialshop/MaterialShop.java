@@ -13,6 +13,7 @@ public final class MaterialShop extends JavaPlugin {
     private ChatPromptService prompts;
     private TradeService trade;
     private TradeLogger logs;
+    private TerritoryHook territories;
     private ShopCommand shopCommand;
 
     @Override
@@ -27,6 +28,7 @@ public final class MaterialShop extends JavaPlugin {
         prompts = new ChatPromptService(this);
         trade = new TradeService(this);
         logs = new TradeLogger(this);
+        territories = new TerritoryHook(this);
         shopCommand = new ShopCommand(this);
         ShopAdminCommand adminCommand = new ShopAdminCommand(this);
 
@@ -35,6 +37,7 @@ public final class MaterialShop extends JavaPlugin {
         manager.registerEvents(prompts, this);
         manager.registerEvents(shopCommand, this);
         manager.registerEvents(new ShopEntityListener(this), this);
+        manager.registerEvents(new ProtectionListener(this), this);
 
         command("shop", shopCommand, shopCommand);
         command("shopadmin", adminCommand, adminCommand);
@@ -97,5 +100,9 @@ public final class MaterialShop extends JavaPlugin {
 
     public TradeLogger logs() {
         return logs;
+    }
+
+    public TerritoryHook territories() {
+        return territories;
     }
 }

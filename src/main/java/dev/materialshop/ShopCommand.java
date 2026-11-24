@@ -94,6 +94,10 @@ public final class ShopCommand implements CommandExecutor, TabCompleter, Listene
         String name = rawName.isBlank() ? player.getName() + "'s shop" : rawName;
         Block target = player.getTargetBlockExact(5);
         if (target != null && target.getState() instanceof Chest) {
+            if (!plugin.territories().canCreate(player, target)) {
+                plugin.msg().send(player, "shop-blocked-here");
+                return;
+            }
             Shop shop = plugin.shops().createPlayer(player, target, held, name);
             if (shop != null) {
                 plugin.gui().openEditor(player, shop);
@@ -123,6 +127,10 @@ public final class ShopCommand implements CommandExecutor, TabCompleter, Listene
     public void onPlace(BlockPlaceEvent event) {
         Pending creation = pending.get(event.getPlayer().getUniqueId());
         if (creation == null || !(event.getBlock().getState() instanceof Chest)) {
+            return;
+        }
+        if (!plugin.territories().canCreate(event.getPlayer(), event.getBlock())) {
+            plugin.msg().send(event.getPlayer(), "shop-blocked-here");
             return;
         }
         cancel(event.getPlayer().getUniqueId());
