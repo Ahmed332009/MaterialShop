@@ -6,6 +6,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,10 +25,22 @@ public final class Messages {
     }
 
     public void reload() {
-        File file = new File(plugin.getDataFolder(), "messages.yml");
+        String configured = plugin.getConfig().getString("language-file", "messages.yml");
+        if (configured == null || configured.isBlank()) {
+            configured = "messages.yml";
+        }
+        File file = new File(plugin.getDataFolder(), configured);
         if (!file.exists()) {
             plugin.getDataFolder().mkdirs();
-            plugin.saveResource("messages.yml", false);
+            try (InputStream in = plugin.getResource("messages.yml")) {
+                if (in != null) {
+                    Files.copy(in, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                } else {
+                    plugin.saveResource("messages.yml", false);
+                }
+            } catch (Exception ex) {
+                plugin.getLogger().warning("Could not create " + configured + ": " + ex.getMessage());
+            }
         }
         yaml = YamlConfiguration.loadConfiguration(file);
     }

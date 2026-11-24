@@ -71,6 +71,10 @@ public final class GuiManager implements Listener {
         return plugin.msg().plain("gui." + key, kv).decoration(TextDecoration.ITALIC, false);
     }
 
+    private String stateWord(boolean open) {
+        return plugin.msg().string(open ? "word-open" : "word-closed", open ? "open" : "closed");
+    }
+
     private Component plain(String key, String... kv) {
         return plugin.msg().get(key, kv);
     }
@@ -337,7 +341,7 @@ public final class GuiManager implements Listener {
                     "z", String.valueOf(shop.location().getBlockZ()),
                     "world", esc(shop.location().getWorld().getName())));
         }
-        info.add(t("toggle-open-lore", "state", shop.open() ? "open" : "closed"));
+        info.add(t("toggle-open-lore", "state", stateWord(shop.open())));
         set(menu, 4, itemIcon(new ItemStack(shop.isAdmin() ? Material.GOLD_BLOCK : Material.CHEST),
                 "shop-entry-name", info, "name", esc(shop.name())));
 
@@ -376,7 +380,7 @@ public final class GuiManager implements Listener {
         set(menu, 16, icon(Material.BARRIER, "remove-listing", "item",
                 esc(selected == null ? "-" : Items.name(selected.item()))), "edit:removelisting");
         set(menu, 39, icon(Material.NAME_TAG, "rename"), "edit:rename");
-        set(menu, 41, icon(Material.LEVER, "toggle-open", "state", shop.open() ? "open" : "closed"),
+        set(menu, 41, icon(Material.LEVER, "toggle-open", "state", stateWord(shop.open())),
                 "edit:toggle");
         set(menu, 43, icon(Material.VILLAGER_SPAWN_EGG, "link-entity"), "edit:link");
         if (shop.isAdmin()) {
