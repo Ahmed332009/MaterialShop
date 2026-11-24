@@ -1,0 +1,35 @@
+name: Temporary toolchain export (remove before release)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: gradle
+      - name: Fetch dependencies
+        run: ./gradlew build --no-daemon
+      - name: Package JDK and Paper API
+        run: |
+          set -e
+          mkdir -p toolchain
+          cp -a "$JAVA_HOME" toolchain/jdk
+          API=$(find "$HOME/.gradle/caches" -name 'paper-api-1.21.11-*.jar' | head -n 1)
+          test -n "$API"
+          cp "$API" toolchain/paper-api.jar
+          tar -czf toolchain.tar.gz toolchain
+          ls -lh toolchain.tar.gz
+      - uses: actions/upload-artifact@v6
+        with:
+          name: local-toolchain
+          path: toolchain.tar.gz
+          retention-days: 1
