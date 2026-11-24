@@ -206,11 +206,11 @@ public final class ShopManager {
             if (!overflow.isEmpty()) {
                 if (chest != null) {
                     for (ItemStack item : chest.getInventory().addItem(overflow.toArray(new ItemStack[0])).values()) {
-                        drop(item);
+                        drop(shop, item);
                     }
                 } else {
                     for (ItemStack item : overflow) {
-                        drop(item);
+                        drop(shop, item);
                     }
                 }
             }
@@ -219,8 +219,9 @@ public final class ShopManager {
     }
 
     /** Last-resort return path when both the chest and collect box are full. */
-    private void drop(ItemStack item) {
-        Location at = shopLocationOrSpawn();
+    private void drop(Shop shop, ItemStack item) {
+        Location at = shop != null && shop.location() != null
+                ? shop.location() : shopLocationOrSpawn();
         at.getWorld().dropItemNaturally(at, item);
         plugin.getLogger().warning("Shop overflow returned as a dropped item at "
                 + at.getWorld().getName() + " " + at.getBlockX() + ", " + at.getBlockY() + ", "

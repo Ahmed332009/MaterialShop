@@ -716,6 +716,9 @@ public final class GuiManager implements Listener {
                     plugin.msg().send(player, "chest-not-found");
                     return;
                 }
+                if (shop.open() && !shop.isAdmin()) {
+                    plugin.shops().returnAll(shop);
+                }
                 shop.open(!shop.open());
                 plugin.shops().save(shop);
                 plugin.msg().send(player, shop.open() ? "shop-reopened" : "shop-closed",
