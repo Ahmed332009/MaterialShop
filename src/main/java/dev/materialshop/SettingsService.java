@@ -166,20 +166,20 @@ public final class SettingsService {
      * override; player shops always use the global rule.
      */
     public boolean paymentAllowed(Material material, Shop shop) {
-        if (!globalPaymentAllowed(material)) {
+        if (material == null || material.isAir()) {
             return false;
         }
-        if (shop == null || !shop.isAdmin() || !adminOverride) {
-            return true;
+        String name = normalize(material.name());
+        if (shop != null && shop.isAdmin() && adminOverride) {
+            String mode = shop.paymentOverride();
+            if ("ALLOW".equalsIgnoreCase(mode)) {
+                return shop.paymentOverrideList().contains(name);
+            }
+            if ("DENY".equalsIgnoreCase(mode)) {
+                return !shop.paymentOverrideList().contains(name);
+            }
         }
-        String mode = shop.paymentOverride();
-        if ("ALLOW".equalsIgnoreCase(mode)) {
-            return shop.paymentOverrideList().contains(normalize(material.name()));
-        }
-        if ("DENY".equalsIgnoreCase(mode)) {
-            return !shop.paymentOverrideList().contains(normalize(material.name()));
-        }
-        return true;
+        return globalPaymentAllowed(material);
     }
 
     /** Point value of a material. Named/enchanted/custom items use their material value. */

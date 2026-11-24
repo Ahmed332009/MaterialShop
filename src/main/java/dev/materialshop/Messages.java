@@ -60,6 +60,10 @@ public final class Messages {
         return apply(yaml.getString(key, key), kv);
     }
 
+    public boolean has(String key) {
+        return yaml.contains(key);
+    }
+
     public List<Component> lore(String key, String... kv) {
         List<Component> out = new ArrayList<>();
         for (String line : yaml.getStringList(key)) {

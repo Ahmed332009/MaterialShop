@@ -43,23 +43,6 @@ jobs:
             || { echo "::error::unexpected plugin name: $NAME"; exit 1; }
           echo "MaterialShop jar OK"
 
-      - name: Export toolchain for local checks
-        run: |
-          set -e
-          mkdir -p toolchain
-          cp -a "$JAVA_HOME" toolchain/jdk
-          API=$(find "$HOME/.gradle/caches" -name 'paper-api-1.21.11-*.jar' | head -n 1)
-          test -n "$API"
-          cp "$API" toolchain/paper-api.jar
-          tar -czf toolchain.tar.gz toolchain
-          ls -lh toolchain.tar.gz
-
-      - uses: actions/upload-artifact@v6
-        with:
-          name: local-toolchain
-          path: toolchain.tar.gz
-          retention-days: 1
-
       - uses: actions/upload-artifact@v6
         with:
           name: MaterialShop
