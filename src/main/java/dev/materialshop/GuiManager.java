@@ -123,6 +123,10 @@ public final class GuiManager implements Listener {
         return menu;
     }
 
+    private void set(Menu menu, int slot, ItemStack item) {
+        set(menu, slot, item, null);
+    }
+
     private void set(Menu menu, int slot, ItemStack item, String action) {
         menu.inv.setItem(slot, item);
         if (action != null) {
