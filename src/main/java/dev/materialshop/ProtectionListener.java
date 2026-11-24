@@ -73,7 +73,7 @@ public final class ProtectionListener implements Listener {
     /** Hoppers (and every other inventory-moving block) may never touch a shop chest. */
     @EventHandler
     public void onHopper(InventoryMoveItemEvent event) {
-        if (isShopChest(event.getSource()) || isShopChest(event.getDestination())) {
+        if (isShopChest(event.getSource().getHolder()) || isShopChest(event.getDestination().getHolder())) {
             event.setCancelled(true);
         }
     }
