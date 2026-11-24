@@ -1,0 +1,51 @@
+name: Build
+
+on:
+  push:
+    branches: ['**']
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-java@v5
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Build MaterialShop
+        run: ./gradlew build --no-daemon --stacktrace
+
+      - name: Verify jar
+        run: |
+          set -e
+          JAR=$(ls build/libs/MaterialShop-*.jar | head -n 1)
+          echo "Checking $JAR"
+          unzip -l "$JAR" | grep -q 'plugin.yml' \
+            || { echo "::error::plugin.yml missing from $JAR"; exit 1; }
+          unzip -l "$JAR" | grep -q 'dev/materialshop/MaterialShop.class' \
+            || { echo "::error::compiled classes missing from $JAR"; exit 1; }
+          if unzip -p "$JAR" plugin.yml | grep -q '\${version}'; then
+            echo "::error::version placeholder in plugin.yml was not expanded"
+            exit 1
+          fi
+          NAME=$(unzip -p "$JAR" plugin.yml | grep '^name:' | awk '{print $2}')
+          [ "$NAME" = "MaterialShop" ] \
+            || { echo "::error::unexpected plugin name: $NAME"; exit 1; }
+          echo "MaterialShop jar OK"
+
+      - uses: actions/upload-artifact@v6
+        with:
+          name: MaterialShop
+          path: build/libs/MaterialShop-*.jar
+          if-no-files-found: error
+          retention-days: 30
