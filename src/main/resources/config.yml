@@ -1,2 +1,100 @@
-# MaterialShop 0.1.0 configuration. Full commented defaults ship in stage 6.
+# ==============================================================================
+# MaterialShop 0.1.0 - configuration
+# No money, no Vault, no economy plugin. Materials pay for materials.
+# Reload live with /shopadmin reload (messages live in messages.yml).
+# ==============================================================================
 config-version: 1
+
+# Language file inside plugins/MaterialShop/. All GUI text comes from this file.
+language-file: messages.yml
+
+# Maximum shops per player. Permission materialshop.limit.<n> can raise it;
+# the highest matching permission wins. materialshop.admin.bypass ignores it.
+shop-limit: 5
+
+# Rows in each owner's collect box (virtual chest). 6 = 54 slots.
+collect-box-rows: 6
+
+# Seconds before a chat prompt (custom quantity, prices, names) is cancelled.
+chat-timeout-seconds: 30
+
+# ------------------------------------------------------------------------------
+# PAYMENT RULES
+# Any material can pay by default EXCEPT the blacklist below. A whitelist, when
+# enabled, replaces the default-open rule: only listed materials may pay.
+# Admin shops can override this with their own allow/deny list in the editor.
+# Namespaced ids and *_SPAWN_EGG wildcards are supported.
+# ------------------------------------------------------------------------------
+payment:
+  use-whitelist: false
+  whitelist:
+    - COPPER_INGOT
+    - IRON_INGOT
+    - GOLD_INGOT
+    - DIAMOND
+    - NETHERITE_INGOT
+  blacklist:
+    - AIR
+    - BEDROCK
+    - BARRIER
+    - COMMAND_BLOCK
+    - CHAIN_COMMAND_BLOCK
+    - REPEATING_COMMAND_BLOCK
+    - COMMAND_BLOCK_MINECART
+    - DEBUG_STICK
+    - STRUCTURE_BLOCK
+    - STRUCTURE_VOID
+    - JIGSAW
+    - END_PORTAL_FRAME
+    - '_SPAWN_EGG'
+    - SPAWNER
+    - LIGHT
+    - END_GATEWAY
+  # Admin shop override modes: DEFAULT, ALLOW (only override-list), DENY (block override-list).
+  admin-allowed-override: true
+
+# ------------------------------------------------------------------------------
+# VALUE TABLE (optional, display only)
+# Point value per item. Used ONLY for a suggested price and a fairness warning
+# shown while editing. It NEVER blocks or changes a trade.
+# Unlisted materials have value 0, so no suggestion is shown for them.
+# Example: a diamond (108) selling for 8 iron ingots (3 each = 24) is 4.5x.
+# ------------------------------------------------------------------------------
+material-values:
+  COPPER_INGOT: 1
+  COPPER_BLOCK: 9
+  IRON_INGOT: 3
+  IRON_BLOCK: 27
+  GOLD_INGOT: 6
+  GOLD_BLOCK: 54
+  DIAMOND: 12
+  DIAMOND_BLOCK: 108
+  NETHERITE_INGOT: 96
+  NETHERITE_BLOCK: 864
+  # Example commented entries:
+  # EMERALD: 12
+  # REDSTONE: 0.5
+
+fairness:
+  # Warn the owner when the asking price is this many times the suggested price
+  # (or less than 1/this). 0 disables the warning. Never blocks a trade.
+  warn-ratio: 4.0
+
+# ------------------------------------------------------------------------------
+# TRANSACTION LOG
+# Every completed trade is appended to logs/transactions.log with a timestamp,
+# buyer, seller/admin shop, items, payment and location. The file rotates by
+# size and at midnight into logs/transactions-YYYY-MM-DD.log.
+# ------------------------------------------------------------------------------
+logging:
+  enabled: true
+  rotate-megabytes: 5
+  log-lines-in-gui: 12
+
+# ------------------------------------------------------------------------------
+# SOFT DEPENDENCIES
+# If these plugins are missing MaterialShop still loads and works normally.
+# ------------------------------------------------------------------------------
+soft-dependencies:
+  materialclaim: true
+  worldguard: true
