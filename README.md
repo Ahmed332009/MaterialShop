@@ -27,8 +27,8 @@ Version **0.1.0** builds on GitHub Actions; the jar is uploaded as the `Material
 
 ## Install
 
-1. Download `MaterialShop-0.1.0.jar` from the `MaterialShop` artifact of a green
-   [Build workflow run](../../actions), or from a release when one is published.
+1. Download `MaterialShop-0.1.0.jar` from the [v0.1.0 release](https://github.com/Ahmed332009/MaterialShop/releases/tag/v0.1.0),
+   or from the `MaterialShop` artifact of a green [Build workflow run](../../actions).
 2. Put it in `plugins/` and restart the server.
 3. Edit `plugins/MaterialShop/config.yml` and `plugins/MaterialShop/messages.yml`.
 4. Run `/shopadmin reload` to apply changes without a restart.

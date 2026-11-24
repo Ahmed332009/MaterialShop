@@ -21,7 +21,7 @@ the jar is the `MaterialShop` artifact (`build/libs/MaterialShop-0.1.0.jar`).
 - No live Paper server test: trades, GUIs, Geyser taps, permissions and soft dependencies are **unverified in game**.
 - No automated unit tests; the README contains the manual acceptance checklist instead.
 - No screenshots yet (README has a section reserved for them).
-- No GitHub Release created; only the Actions artifact exists.
+- GitHub Release `v0.1.0` is published with `MaterialShop-0.1.0.jar` attached: https://github.com/Ahmed332009/MaterialShop/releases/tag/v0.1.0
 - Chest protection uses the chest's stored location; if a player moves a shop chest with a plugin that bypasses pistons, re-link by recreating the shop.
 - Admin-shop per-shop payment overrides are set from the editor with held items, not from config.
 
@@ -37,7 +37,7 @@ the jar is the `MaterialShop` artifact (`build/libs/MaterialShop-0.1.0.jar`).
 1. Upload the jar to a Paper 26.3 test server with Java 21 (and Geyser for Bedrock checks).
 2. Work through the README checklist in order; watch `plugins/MaterialShop/logs/transactions.log` and server console.
 3. Fix any in-game issue in the relevant file (map below), commit to this branch and let Actions rebuild.
-4. When the checklist is green, take screenshots into `docs/screenshots/`, update README, tag `v0.1.0` and publish a GitHub Release with the jar.
+4. When the checklist is green, take screenshots into `docs/screenshots/` and publish `v0.1.1` (push a `v*` tag; the workflow attaches the jar automatically).
 
 ## What to do with each file
 
@@ -59,4 +59,4 @@ the jar is the `MaterialShop` artifact (`build/libs/MaterialShop-0.1.0.jar`).
 > Read HANDOFF.md and README.md first. The 0.1.0 source is complete and the GitHub Actions build is green.
 > Test the jar from the latest Actions artifact on a Paper 26.3 server using the README checklist, fix any
 > in-game bugs in `dev.materialshop` sources, commit to this branch only, and keep the Actions build green.
-> Then add screenshots and publish a `v0.1.0` release. Do not switch branches; do not add Vault or an economy dependency.
+> `v0.1.0` is already released with the jar attached. Do not switch branches; do not add Vault or an economy dependency. After an in-game fix, push a new `v*` tag to publish the next release with its jar.

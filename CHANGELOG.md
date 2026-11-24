@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1.0 — first release (built on GitHub Actions)
+## 0.1.0 — first release (published 2026-11-24, built and jar-attached by GitHub Actions)
 
 - Paper 1.21.11 API, Java 21, Gradle 8.10.2 wrapper, GitHub Actions jar artifact, GPL-3.0.
 - Admin shops (`/shopadmin`) with unlimited stock, optional linked villager/NPC opening point and per-shop payment overrides.
