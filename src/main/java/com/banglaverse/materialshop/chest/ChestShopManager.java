@@ -5,6 +5,7 @@ import com.banglaverse.materialshop.MaterialShop;
 import com.banglaverse.materialshop.model.CollectBox;
 import com.banglaverse.materialshop.model.Listing;
 import com.banglaverse.materialshop.model.Shop;
+import com.banglaverse.materialshop.trade.Rewards;
 import org.bukkit.block.Block;
 import org.bukkit.block.Container;
 import org.bukkit.inventory.ItemStack;
@@ -102,7 +103,8 @@ public final class ChestShopManager {
                 if (item == null || item.getType().isAir()) {
                     continue;
                 }
-                box.add(item, item.getAmount(), plugin.settings().collectCapacity());
+                Rewards.give(plugin, shop.owner(), box.add(item, item.getAmount(),
+                        plugin.settings().collectCapacity()));
             }
             container.getInventory().clear();
         }

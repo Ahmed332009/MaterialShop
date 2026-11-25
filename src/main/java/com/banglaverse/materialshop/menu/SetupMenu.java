@@ -157,11 +157,18 @@ public final class SetupMenu extends MenuBase {
     }
 
     private void addUnits(int amount) {
+        if (mode == Mode.CHEST) {
+            return;
+        }
         units = Math.min(plugin.settings().maxQuantity(), Math.max(1, units + amount));
         rebuild();
     }
 
     private void promptUnits() {
+        if (mode == Mode.CHEST) {
+            plugin.msg().send(player, "chest-note-hint");
+            return;
+        }
         int max = mode == Mode.SERVER ? plugin.settings().maxQuantity() : availableUnits();
         plugin.msg().send(player, "stock-prompt");
         plugin.prompts().request(player, text -> {

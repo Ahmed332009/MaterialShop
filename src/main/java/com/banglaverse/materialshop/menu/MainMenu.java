@@ -33,6 +33,8 @@ public final class MainMenu extends MenuBase {
                 () -> new CollectMenu(plugin, player).open());
         if (plugin.settings().chestEnabled()) {
             set(20, icon(Material.CHEST, "menu.main.chest"),
+                    () -> player.performCommand("shop chest create"));
+            set(22, icon(Material.BARREL, "menu.main.chest-list"),
                     () -> new ChestShopListMenu(plugin, player).open());
         }
         if (player.hasPermission("materialshop.admin")) {

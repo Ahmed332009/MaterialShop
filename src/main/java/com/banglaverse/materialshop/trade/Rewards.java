@@ -38,6 +38,9 @@ public final class Rewards {
         for (ItemStack item : overflow) {
             if (player != null && player.isOnline()) {
                 player.getWorld().dropItemNaturally(player.getLocation(), item);
+            } else if (!plugin.getServer().getWorlds().isEmpty()) {
+                var world = plugin.getServer().getWorlds().get(0);
+                world.dropItemNaturally(world.getSpawnLocation(), item);
             }
             plugin.getLogger().warning("MaterialShop overflow item kept as a drop: " + Items.describe(item, item.getAmount()));
         }

@@ -49,7 +49,7 @@ public final class PurchaseMenu extends MenuBase {
 
     @Override
     protected void build() {
-        Listing listing = plugin.data().listing(listingId);
+        Listing listing = fresh();
         if (listing == null || listing.options().isEmpty()) {
             return;
         }
