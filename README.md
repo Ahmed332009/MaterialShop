@@ -25,8 +25,8 @@ Target server: Paper 26.3 (Banglaverse). Paper API and Adventure Components only
 
 ## Install
 
-1. Download `MaterialShop-0.1.0.jar` from the `MaterialShop` artifact of a green
-   [Build workflow run](../../actions), or from a release.
+1. Download `MaterialShop-0.1.0.jar` from the [v0.1.1 release](https://github.com/Ahmed332009/MaterialShop/releases/tag/v0.1.1)
+   (marketplace rebuild), or from the `MaterialShop` artifact of a green [Build workflow run](../../actions).
 2. Put it in `plugins/` and restart the server.
 3. Edit `plugins/MaterialShop/config.yml` and `messages.yml`, then `/shopadmin reload`.
 
@@ -111,7 +111,7 @@ All commands have tab completion for subcommands and shop ids.
 - The old WorldGuard/reflection hook from the earlier build was removed: this version uses only the simulated-break hook, which lets MaterialClaim and other claim plugins veto chest shop creation.
 - Drag is cancelled in all menus, including setup slots; simple taps cover both Java and Geyser.
 - Setup prices, stock units, custom quantities and shop names use chat prompts, never anvil GUIs or signs.
-- The jar version stays `0.1.0` as requested. The previously published `v0.1.0` release contains the earlier chest-centred build; this marketplace rebuild should get a new release tag.
+- The jar version stays `0.1.0` as requested. The previously published `v0.1.0` release contains the earlier chest-centred build; this marketplace rebuild is published as tag `v0.1.1` with the `MaterialShop-0.1.0.jar` asset.
 
 ## Screenshots
 

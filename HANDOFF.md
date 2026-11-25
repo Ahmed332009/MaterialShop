@@ -17,7 +17,7 @@ GitHub Actions build is green on the final branch commit; jar artifact is `Mater
 
 - No live Paper 26.3 server test. All in-game behaviour is unverified.
 - No screenshots directory yet.
-- No new release tag for the marketplace rebuild (the existing `v0.1.0` release is the old design).
+- Marketplace rebuild published as `v0.1.1` with `MaterialShop-0.1.0.jar` attached: https://github.com/Ahmed332009/MaterialShop/releases/tag/v0.1.1
 - No automated unit tests; README has the manual checklist instead.
 - Category tabs are capped at 18 configured categories plus All; larger config lists are ignored after that.
 
@@ -34,7 +34,7 @@ GitHub Actions build is green on the final branch commit; jar artifact is `Mater
 1. Download the jar from the green Actions run and test on Paper 26.3 with Geyser.
 2. Follow the README checklist in order; fix bugs in the relevant file below, commit to this branch and keep Actions green.
 3. Add screenshots to `docs/screenshots/` and link them in README.
-4. Push a new `v*` tag (for example `v0.1.1`) to publish a GitHub Release with the rebuilt jar. Do not overwrite the old `v0.1.0` tag.
+4. After an in-game fix, push a new `v*` tag (for example `v0.1.2`) to publish a GitHub Release with the rebuilt jar. Do not overwrite `v0.1.0` or `v0.1.1`.
 
 ## What to do with each file
 
@@ -54,4 +54,4 @@ GitHub Actions build is green on the final branch commit; jar artifact is `Mater
 
 ## Continuation prompt for another account
 
-> Continue MaterialShop on branch `arena/4018ac5c-materialshop` in `Ahmed332009/MaterialShop`. Read HANDOFF.md and README.md first. The marketplace rebuild source is complete and the GitHub Actions build is green. Download the jar from the green run, test it on Paper 26.3 with Geyser using the README checklist, fix any bugs in `com.banglaverse.materialshop` sources, commit only to this branch and keep the build green. Then add screenshots and push a new `v*` tag to publish the release. Do not overwrite the old `v0.1.0` tag, do not switch branches, and do not add Vault, an economy dependency, NMS, reflection or shaded libraries.
+> Continue MaterialShop on branch `arena/4018ac5c-materialshop` in `Ahmed332009/MaterialShop`. Read HANDOFF.md and README.md first. The marketplace rebuild source is complete and the GitHub Actions build is green. Download the jar from the green run, test it on Paper 26.3 with Geyser using the README checklist, fix any bugs in `com.banglaverse.materialshop` sources, commit only to this branch and keep the build green. Then add screenshots and push a new `v*` tag to publish the next release. Do not overwrite `v0.1.0` or `v0.1.1`, do not switch branches, and do not add Vault, an economy dependency, NMS, reflection or shaded libraries.
