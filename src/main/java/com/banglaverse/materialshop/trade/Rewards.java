@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /** Safe return path for escrow, setup samples and collect-box overflow. */
 public final class Rewards {

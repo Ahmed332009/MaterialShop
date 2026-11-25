@@ -140,7 +140,7 @@ public final class SetupMenu extends MenuBase {
         }
         String note = mode == Mode.SERVER ? "menu.setup.server-note"
                 : mode == Mode.CHEST ? "menu.setup.chest-note" : null;
-        List<org.kyori.adventure.text.Component> lore = new ArrayList<>();
+        List<net.kyori.adventure.text.Component> lore = new ArrayList<>();
         if (editId != null) {
             lore.add(plugin.msg().plain("menu.setup.edit-note"));
         }
