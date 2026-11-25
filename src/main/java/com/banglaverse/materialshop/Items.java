@@ -88,6 +88,18 @@ public final class Items {
         return out;
     }
 
+    /** Free room in a virtual collect box, counted in individual items. */
+    public static int collectRoom(List<ItemStack> stacks, ItemStack template, int capacity) {
+        int max = Math.max(1, template.getMaxStackSize());
+        int room = Math.max(0, capacity - stacks.size()) * max;
+        for (ItemStack stack : stacks) {
+            if (similar(stack, template)) {
+                room += Math.max(0, max - stack.getAmount());
+            }
+        }
+        return room;
+    }
+
     /** Plain-text name for messages and logs. */
     public static String name(ItemStack item) {
         if (item == null) {

@@ -26,7 +26,7 @@ public final class Settings {
     private long expiryDays = 0;
     private int maxQuantity = 2304;
     private int collectCapacity = 45;
-    private int promptTicks = 600;
+    private long promptTicks = 600L;
     private boolean whitelistEnabled = false;
     private final Set<String> blacklist = new HashSet<>();
     private final Set<String> whitelist = new HashSet<>();
