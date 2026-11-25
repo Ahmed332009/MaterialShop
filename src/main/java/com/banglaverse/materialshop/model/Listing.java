@@ -51,6 +51,10 @@ public final class Listing {
         return item.clone();
     }
 
+    public PaymentOption option(int index) {
+        return index >= 0 && index < options.size() ? new PaymentOption(options.get(index).item()) : null;
+    }
+
     public void options(List<PaymentOption> values) {
         options = new ArrayList<>(values);
     }

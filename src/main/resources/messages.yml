@@ -1,6 +1,7 @@
 # MaterialShop text. Legacy color codes with & (no MiniMessage, no emojis).
 # Placeholders use {name}. Player-supplied text is stripped of color codes.
 prefix: "&2[Shop]&r "
+word-infinite: "infinite"
 no-permission: "&cYou do not have permission to do that."
 no-permission-admin: "&cAdmin permission (materialshop.admin) is required."
 player-only: "&cThis command can only be used by a player."
