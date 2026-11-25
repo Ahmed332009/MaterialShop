@@ -1,64 +1,60 @@
-# ==============================================================================
-# MaterialShop 0.1.0 - configuration
-# No money, no Vault, no economy plugin. Materials pay for materials.
-# Reload live with /shopadmin reload (messages live in messages.yml).
-# ==============================================================================
-config-version: 1
+# =============================================================================
+# MaterialShop 0.1.0 - marketplace configuration
+# Materials pay for materials. No money, no Vault, no economy plugin.
+# Reload without a restart: /shopadmin reload
+# =============================================================================
+config-version: 2
 
-# Language file inside plugins/MaterialShop/. All GUI text comes from this file.
+# Language file inside plugins/MaterialShop/. Every player-visible string lives there.
 language-file: messages.yml
 
-# Maximum shops per player. Permission materialshop.limit.<n> can raise it;
-# the highest matching permission wins. materialshop.admin.bypass ignores it.
+# ------------------------------------------------------------------------------
+# LIMITS
+# ------------------------------------------------------------------------------
+# Default maximum chest shops per player. Raised by materialshop.limit.<number>.
 shop-limit: 5
-
-# Rows in each owner's collect box (virtual chest). 6 = 54 slots.
-collect-box-rows: 6
-
-# Seconds before a chat prompt (custom quantity, prices, names) is cancelled.
-chat-timeout-seconds: 30
+# Maximum market listings per player.
+max-listings: 20
+# Optional listing expiry in days. 0 = never expire.
+listing-expiry-days: 0
+# Hard cap for a single purchase (Max and Custom buttons).
+max-quantity: 2304
+# Collect box capacity, in item stacks per player.
+collect-box-capacity: 45
+# Chat prompt timeout in seconds (custom quantity, prices, names, stock).
+prompt-timeout-seconds: 30
 
 # ------------------------------------------------------------------------------
 # PAYMENT RULES
-# Any material can pay by default EXCEPT the blacklist below. A whitelist, when
-# enabled, replaces the default-open rule: only listed materials may pay.
-# Admin shops can override this with their own allow/deny list in the editor.
-# Namespaced ids and *_SPAWN_EGG wildcards are supported.
+# Air, non-items and spawn eggs are always blocked. Server shops ignore these lists.
 # ------------------------------------------------------------------------------
-payment:
-  use-whitelist: false
-  whitelist:
-    - COPPER_INGOT
-    - IRON_INGOT
-    - GOLD_INGOT
-    - DIAMOND
-    - NETHERITE_INGOT
-  blacklist:
-    - AIR
-    - BEDROCK
-    - BARRIER
-    - COMMAND_BLOCK
-    - CHAIN_COMMAND_BLOCK
-    - REPEATING_COMMAND_BLOCK
-    - COMMAND_BLOCK_MINECART
-    - DEBUG_STICK
-    - STRUCTURE_BLOCK
-    - STRUCTURE_VOID
-    - JIGSAW
-    - END_PORTAL_FRAME
-    - '_SPAWN_EGG'
-    - SPAWNER
-    - LIGHT
-    - END_GATEWAY
-  # Admin shop override modes: DEFAULT, ALLOW (only override-list), DENY (block override-list).
-  admin-allowed-override: true
+payment-blacklist:
+  - AIR
+  - BEDROCK
+  - BARRIER
+  - COMMAND_BLOCK
+  - CHAIN_COMMAND_BLOCK
+  - REPEATING_COMMAND_BLOCK
+  - COMMAND_BLOCK_MINECART
+  - DEBUG_STICK
+  - STRUCTURE_BLOCK
+  - STRUCTURE_VOID
+  - JIGSAW
+  - END_PORTAL_FRAME
+  - SPAWNER
+payment-whitelist-enabled: false
+payment-whitelist:
+  - COPPER_INGOT
+  - IRON_INGOT
+  - GOLD_INGOT
+  - DIAMOND
+  - NETHERITE_INGOT
 
 # ------------------------------------------------------------------------------
-# VALUE TABLE (optional, display only)
-# Point value per item. Used ONLY for a suggested price and a fairness warning
-# shown while editing. It NEVER blocks or changes a trade.
-# Unlisted materials have value 0, so no suggestion is shown for them.
-# Example: a diamond (108) selling for 8 iron ingots (3 each = 24) is 4.5x.
+# VALUE TABLE (display only)
+# Fairness warning threshold: a listing is lopsided when price/suggestion > ratio
+# or < 1/ratio. It never blocks a listing or a trade. 0 disables the warning.
+# Example commented entry: EMERALD: 12
 # ------------------------------------------------------------------------------
 material-values:
   COPPER_INGOT: 1
@@ -71,30 +67,87 @@ material-values:
   DIAMOND_BLOCK: 108
   NETHERITE_INGOT: 96
   NETHERITE_BLOCK: 864
-  # Example commented entries:
   # EMERALD: 12
-  # REDSTONE: 0.5
+fairness-ratio: 4.0
 
-fairness:
-  # Warn the owner when the asking price is this many times the suggested price
-  # (or less than 1/this). 0 disables the warning. Never blocks a trade.
-  warn-ratio: 4.0
+# ------------------------------------------------------------------------------
+# CATEGORY MAPPING
+# Each item gets the first category whose list contains its Material.
+# Unlisted plain items fall back to Misc; named/custom-model items go to Custom items.
+# ------------------------------------------------------------------------------
+categories:
+  Blocks:
+    - STONE
+    - COBBLESTONE
+    - DIRT
+    - GRASS_BLOCK
+    - OAK_LOG
+    - OAK_PLANKS
+    - GLASS
+  "Tools and Weapons":
+    - DIAMOND_SWORD
+    - DIAMOND_PICKAXE
+    - IRON_SWORD
+    - IRON_PICKAXE
+    - BOW
+    - ARROW
+  Armor:
+    - DIAMOND_HELMET
+    - DIAMOND_CHESTPLATE
+    - DIAMOND_LEGGINGS
+    - DIAMOND_BOOTS
+    - IRON_HELMET
+    - IRON_CHESTPLATE
+  Food:
+    - BREAD
+    - COOKED_BEEF
+    - APPLE
+    - GOLDEN_APPLE
+    - CARROT
+    - POTATO
+  Redstone:
+    - REDSTONE
+    - REDSTONE_BLOCK
+    - REPEATER
+    - COMPARATOR
+    - PISTON
+    - OBSERVER
+  Farming:
+    - WHEAT
+    - WHEAT_SEEDS
+    - CARROT
+    - POTATO
+    - BONE_MEAL
+    - SUGAR_CANE
+  "Mob drops":
+    - BONE
+    - STRING
+    - FEATHER
+    - LEATHER
+    - ROTTEN_FLESH
+    - ENDER_PEARL
+  "Ores and Ingots":
+    - COAL
+    - IRON_INGOT
+    - COPPER_INGOT
+    - GOLD_INGOT
+    - DIAMOND
+    - NETHERITE_INGOT
+  Misc: []
+  "Custom items": []
+
+# ------------------------------------------------------------------------------
+# CHEST SHOPS (optional)
+# When false, every chest-shop button and command is hidden.
+# ------------------------------------------------------------------------------
+chest-shops:
+  enabled: true
 
 # ------------------------------------------------------------------------------
 # TRANSACTION LOG
-# Every completed trade is appended to logs/transactions.log with a timestamp,
-# buyer, seller/admin shop, items, payment and location. The file rotates by
-# size and at midnight into logs/transactions-YYYY-MM-DD.log.
+# Rotates by size into logs/transactions-<timestamp>.log.
 # ------------------------------------------------------------------------------
 logging:
   enabled: true
   rotate-megabytes: 5
   log-lines-in-gui: 12
-
-# ------------------------------------------------------------------------------
-# SOFT DEPENDENCIES
-# If these plugins are missing MaterialShop still loads and works normally.
-# ------------------------------------------------------------------------------
-soft-dependencies:
-  materialclaim: true
-  worldguard: true
