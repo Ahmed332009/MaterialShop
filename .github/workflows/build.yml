@@ -32,7 +32,7 @@ jobs:
           echo "Checking $JAR"
           unzip -l "$JAR" | grep -q 'plugin.yml' \
             || { echo "::error::plugin.yml missing from $JAR"; exit 1; }
-          unzip -l "$JAR" | grep -q 'dev/materialshop/MaterialShop.class' \
+          unzip -l "$JAR" | grep -q 'com/banglaverse/materialshop/MaterialShop.class' \
             || { echo "::error::compiled classes missing from $JAR"; exit 1; }
           if unzip -p "$JAR" plugin.yml | grep -q '\${version}'; then
             echo "::error::version placeholder in plugin.yml was not expanded"

@@ -1,19 +1,17 @@
 name: MaterialShop
 version: '${version}'
-main: dev.materialshop.MaterialShop
+main: com.banglaverse.materialshop.MaterialShop
 api-version: '1.21'
 authors: [Ahmed332009]
 description: Barter shop - trade materials for materials. No money, no Vault, no economy plugin.
-softdepend: [MaterialClaim_Block, MaterialClaim_Chunk, WorldGuard]
 commands:
   shop:
-    aliases: [materialshopuser, mshop]
-    description: Open the MaterialShop menu, create or manage your shops
-    usage: /shop [create|list|collect|help]
+    aliases: [ms, materialshop]
+    description: Open the MaterialShop market, manage listings and chest shops
+    usage: /shop [collect|list|help|chest create]
   shopadmin:
-    aliases: [materialshop, ms]
-    description: Create and manage admin shops, reload configuration and view the trade log
-    usage: /shopadmin [create|remove|edit|reload|log|collect]
+    description: Create and manage server shops, reload configuration and view the trade log
+    usage: /shopadmin [create|remove|edit|npc|list|reload|log]
 permissions:
   materialshop.use:
     default: true
@@ -24,9 +22,6 @@ permissions:
   materialshop.collect:
     default: true
     description: Collect sale proceeds from the collect box
-  materialshop.limit:
-    default: true
-    description: Permission prefix for per-player shop limits (materialshop.limit.<number>)
   materialshop.admin:
     default: op
     description: Use /shopadmin and manage admin shops

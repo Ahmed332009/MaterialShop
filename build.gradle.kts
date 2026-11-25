@@ -4,7 +4,7 @@ plugins {
 
 // Same toolchain as the companion MaterialClaim plugin: Java 21, Paper 1.21.11 API.
 // Paper keeps plugins built this way working on newer Paper releases.
-group = "dev.materialshop"
+group = "com.banglaverse.materialshop"
 version = "0.1.0"
 
 repositories {
