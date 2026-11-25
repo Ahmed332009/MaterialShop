@@ -1,16 +1,18 @@
 # Changelog
 
-## 0.1.0 — first release (published 2026-11-24, built and jar-attached by GitHub Actions)
+## 0.1.0 — marketplace rebuild (current branch)
 
-- Paper 1.21.11 API, Java 21, Gradle 8.10.2 wrapper, GitHub Actions jar artifact, GPL-3.0.
-- Admin shops (`/shopadmin`) with unlimited stock, optional linked villager/NPC opening point and per-shop payment overrides.
-- Player shops created from a targeted or newly placed chest; max 5 by default, raised by `materialshop.limit.<n>`.
-- Exact ItemStack listings with 1–4 payment options; names, enchantments, custom model data and NBT are preserved.
-- Chest-only paginated GUIs: main menu, shop lists, item grid, purchase screen, payment selector and collect box.
-- Quantity buttons 1/8/64/Max/Custom; custom quantity via chat with `cancel` and timeout (no anvil GUI or sign).
-- Atomic trades with per-listing locks, inventory snapshots, rollback, collect-box capacity check and main-thread-only mutation.
-- Player and admin collect boxes; closing a player shop returns chest stock and collect-box content.
-- Chest protection against other players, hoppers, explosions and pistons; reflective MaterialClaim and WorldGuard checks.
-- Append-only `logs/transactions.log` with daily and size rotation; in-game trade-log menu.
-- Configurable payment blacklist/whitelist, optional value table with fairness warning, message file, log and soft-dependency settings.
-- `/shop`, `/shopadmin` (aliases `/materialshop`, `/ms`) with tab completion, plus all documented permissions.
+- Rebuilt under `com.banglaverse.materialshop` with the MaterialClaim build values: Java 21, Paper 1.21.11 API, Gradle 8.10.2, `api-version: '1.21'`, GPL-3.0.
+- Central `/shop` market as the primary feature: category tabs, pagination, newest/name sorting, no chest required.
+- GUI listing setup: sale slot (stack size = unit), up to four payment slots, stock units, confirm. Escrow lives in `data.yml`.
+- Listing management: add stock, change each price, cancel with escrow returned; optional expiry.
+- Purchase screen with payment selector, 1/8/64/Max/Custom quantities, chat prompts and You give / You get confirmation.
+- Server shops with infinite stock, `/shopadmin` tools and persistent-data-tagged villager NPCs.
+- Optional chest shops with container stock, protection and a simulated-block-break claim hook. No reflection or NMS.
+- Atomic trades on the main thread with snapshot rollback, listing locks, collect-box capacity check and size-rotated transaction log.
+- `messages.yml` with `&` color codes for every player-visible string; full commented `config.yml`.
+- Chest-only menus; shift-click, hotkeys, double-click, drag and offhand swaps cancelled outside controlled setup slots.
+
+## 0.1.0 (original release, tag `v0.1.0`)
+
+- First chest-centred shop build with admin/player shops and collected payments. Kept for history; superseded by the marketplace rebuild on this branch.

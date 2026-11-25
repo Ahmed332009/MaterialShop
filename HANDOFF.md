@@ -1,62 +1,57 @@
-# Handoff — MaterialShop 0.1.0
+# Handoff — MaterialShop marketplace rebuild
 
-Branch: `arena/4018ac5c-materialshop`. Base: `721e4ac` of `main`. Work is committed and pushed to this branch.
+Branch: `arena/4018ac5c-materialshop`. The old `v0.1.0` GitHub Release is the earlier chest-centred build; this branch contains the marketplace rebuild and keeps jar version `0.1.0`.
 
 ## Done
 
-- Stage 1: skeleton, `build.gradle.kts`, Gradle wrapper from MaterialClaim, `plugin.yml`, Actions workflow, GPL-3.0 `LICENSE`, `.gitignore`.
-- Stage 2: data model (`Shop`, `Listing`, `PaymentOption`), exact `Items` matching, YAML `ShopStorage` with Bukkit ItemStack serialization, `SettingsService`, `Messages`.
-- Stage 3: admin shops, all chest GUIs, editor, chat prompts, atomic `TradeService`, `TradeLogger`, commands and tab completion.
-- Stage 4: player shop creation (target or place chest), collect box, close-shop returns.
-- Stage 5: chest protection, hopper/explosion/piston guards, reflective MaterialClaim and WorldGuard hooks, territory check on creation.
-- Stage 6: full `config.yml`, `messages.yml`, README install/commands/permissions/config/screenshots/test checklist, CHANGELOG, this handoff.
+- Stage 1: rebuilt skeleton under `com.banglaverse.materialshop`, plugin.yml aliases `/ms` and `/materialshop`, Actions jar verification updated.
+- Stage 2: model (`Listing`, `PaymentOption`, `CollectBox`, `Shop`), `Items` matching, commented `config.yml`, `messages.yml` (`&` colors), atomic `DataStore`.
+- Stage 3-5 (separate commits, pushed together): market GUIs, listing setup/management, purchase flow, collect box, server shops, villager NPC tags, optional chest-shop module, protection and simulated-break claim hook, trade engine, logger, prompts, commands.
+- Stage 6: README with install, commands, permissions, config, decisions and the full manual test checklist; CHANGELOG; this handoff.
 
 ## Build status
 
-Every stage was compiled by GitHub Actions. Last green run: check the latest `Build` workflow on this branch;
-the jar is the `MaterialShop` artifact (`build/libs/MaterialShop-0.1.0.jar`).
+GitHub Actions build is green on the final branch commit; jar artifact is `MaterialShop` on that run.
 
 ## Not done / untested
 
-- No live Paper server test: trades, GUIs, Geyser taps, permissions and soft dependencies are **unverified in game**.
-- No automated unit tests; the README contains the manual acceptance checklist instead.
-- No screenshots yet (README has a section reserved for them).
-- GitHub Release `v0.1.0` is published with `MaterialShop-0.1.0.jar` attached: https://github.com/Ahmed332009/MaterialShop/releases/tag/v0.1.0
-- Chest protection uses the chest's stored location; if a player moves a shop chest with a plugin that bypasses pistons, re-link by recreating the shop.
-- Admin-shop per-shop payment overrides are set from the editor with held items, not from config.
+- No live Paper 26.3 server test. All in-game behaviour is unverified.
+- No screenshots directory yet.
+- No new release tag for the marketplace rebuild (the existing `v0.1.0` release is the old design).
+- No automated unit tests; README has the manual checklist instead.
+- Category tabs are capped at 18 configured categories plus All; larger config lists are ignored after that.
 
 ## Known bugs / limitations
 
-- Chat prompts and shop creation modes are per-player and in memory; a server restart cancels them (shop data itself persists).
-- The transaction log reader shows the newest lines of the current file only, not rotated files.
-- `language-file` copies the shipped `messages.yml` when a different name is configured; it does not translate anything.
-- Max quantity is capped at 2304 to keep one atomic transfer; larger purchases must be split.
+- Listing creation time is not persisted separately, so newest-first sorting may reorder after a restart.
+- Setup-menu drag is cancelled even in free slots; taps work for Java and Geyser.
+- Collect-box overflow is dropped at world spawn with a console warning when the owner is offline; it is never silently deleted.
+- A chest shop's listing stock comes from the live container; if the container is removed by an external plugin, trades on that shop fail cleanly.
+- Server-shop payments are consumed, as specified; there is no admin earnings box in this build.
 
 ## Exact next steps
 
-1. Upload the jar to a Paper 26.3 test server with Java 21 (and Geyser for Bedrock checks).
-2. Work through the README checklist in order; watch `plugins/MaterialShop/logs/transactions.log` and server console.
-3. Fix any in-game issue in the relevant file (map below), commit to this branch and let Actions rebuild.
-4. When the checklist is green, take screenshots into `docs/screenshots/` and publish `v0.1.1` (push a `v*` tag; the workflow attaches the jar automatically).
+1. Download the jar from the green Actions run and test on Paper 26.3 with Geyser.
+2. Follow the README checklist in order; fix bugs in the relevant file below, commit to this branch and keep Actions green.
+3. Add screenshots to `docs/screenshots/` and link them in README.
+4. Push a new `v*` tag (for example `v0.1.1`) to publish a GitHub Release with the rebuilt jar. Do not overwrite the old `v0.1.0` tag.
 
 ## What to do with each file
 
-- `src/main/java/dev/materialshop/MaterialShop.java` — plugin bootstrap, service wiring, reload command hook.
-- `SettingsService.java`, `Messages.java` — config/message loading; add keys here when adding player-facing text.
-- `Shop.java`, `Listing.java`, `PaymentOption.java` — in-memory model; add fields here and to `ShopStorage` together.
-- `ShopStorage.java` — YAML load/save; change this if moving to SQLite (not done; MaterialClaim uses YAML).
-- `Items.java` — exact matching, counting, room calculation and collect-box arithmetic; all duplication-sensitive logic lives here.
-- `TradeService.java`, `TradeLogger.java` — atomic trades, rollback, locking and log rotation.
-- `GuiManager.java`, `ChatPromptService.java` — chest menus, click routing, chat prompts.
-- `ShopCommand.java`, `ShopAdminCommand.java`, `ShopEntityListener.java`, `ProtectionListener.java`, `TerritoryHook.java` — commands, entity opening, chest protection and soft dependencies.
-- `src/main/resources/config.yml`, `messages.yml` — shipped defaults; every GUI string must have a key in `messages.yml`.
-- `.github/workflows/build.yml` — build, jar verification and artifact upload.
-- `README.md`, `CHANGELOG.md`, `HANDOFF.md`, `LICENSE`, `.gitignore` — documentation and repo hygiene.
+- `MaterialShop.java` — boot, services, listeners, commands and expiry task.
+- `Settings.java`, `Messages.java` — config and `&`-color message loading.
+- `Items.java` — `isSimilar` matching, counting, room and safe stack helpers.
+- `model/` — listing, escrow, payment options, collect box and shop records.
+- `storage/DataStore.java` — atomic YAML persistence; change this if a database is ever wanted.
+- `trade/TradeEngine.java` — main-thread atomic trade order and rollback; `TradeLogger.java` logs; `Rewards.java` returns items.
+- `menu/` — one class per screen; `MenuBase.java` owns click safety.
+- `listener/` — menu click routing, chat prompts, villager NPC opening.
+- `chest/` — optional chest shop manager and protection listener; `hook/ClaimHook.java` is the small simulated-break hook to replace with a real claims API later.
+- `command/` — `/shop` and `/shopadmin` with tab completion.
+- `src/main/resources/config.yml`, `messages.yml` — shipped defaults; add message keys for any new GUI text.
+- `.github/workflows/build.yml` — build, verify, upload artifact and publish `v*` tags.
+- `README.md`, `CHANGELOG.md`, `LICENSE`, `.gitignore`, `HANDOFF.md` — documentation and repo hygiene.
 
 ## Continuation prompt for another account
 
-> Continue MaterialShop on branch `arena/4018ac5c-materialshop` in the `Ahmed332009/MaterialShop` repo.
-> Read HANDOFF.md and README.md first. The 0.1.0 source is complete and the GitHub Actions build is green.
-> Test the jar from the latest Actions artifact on a Paper 26.3 server using the README checklist, fix any
-> in-game bugs in `dev.materialshop` sources, commit to this branch only, and keep the Actions build green.
-> `v0.1.0` is already released with the jar attached. Do not switch branches; do not add Vault or an economy dependency. After an in-game fix, push a new `v*` tag to publish the next release with its jar.
+> Continue MaterialShop on branch `arena/4018ac5c-materialshop` in `Ahmed332009/MaterialShop`. Read HANDOFF.md and README.md first. The marketplace rebuild source is complete and the GitHub Actions build is green. Download the jar from the green run, test it on Paper 26.3 with Geyser using the README checklist, fix any bugs in `com.banglaverse.materialshop` sources, commit only to this branch and keep the build green. Then add screenshots and push a new `v*` tag to publish the release. Do not overwrite the old `v0.1.0` tag, do not switch branches, and do not add Vault, an economy dependency, NMS, reflection or shaded libraries.

@@ -1,124 +1,150 @@
 # MaterialShop
 
-A Minecraft Paper **barter shop**: players trade materials for materials. No money, no Vault, no economy plugin.
-Companion to [MaterialClaim](https://github.com/Ahmed332009/MaterialClaim) — same Paper API level, Java version,
-Gradle setup, package style, YAML persistence and GitHub Actions workflow.
+A Paper **barter marketplace**: players trade materials for materials. No money, no Vault, no economy plugin.
+Companion to [MaterialClaim](https://github.com/Ahmed332009/MaterialClaim). Java players and Bedrock players
+through GeyserMC use the same chest-inventory menus — no Bedrock forms, anvil GUIs, signs or dialogs.
 
-Version **0.1.0** builds on GitHub Actions; the jar is uploaded as the `MaterialShop` artifact on every push.
+Version **0.1.0**, GPL-3.0. The primary feature is the central `/shop` market: no chest or block is needed.
+Chest shops are an optional extra that can be switched off in config.yml.
 
-## Features
+## Values copied from MaterialClaim (not guessed)
 
-- **Admin shops** with unlimited stock, created by staff with `/shopadmin`. A villager or NPC can be linked as a one-tap opening point.
-- **Player shops** backed by a physical chest. Hold the item to sell, look at a chest (or place one), then set payments in the menu.
-- One listing = one **exact** ItemStack (name, lore, enchantments, custom model data and NBT all preserved) sold for **1–4 alternative payment options**.
-- Any material may pay unless it is on the configurable blacklist (or off the optional whitelist). Admin shops can override the rule per shop.
-- Optional point **value table** shows a suggested price and a fairness warning. It never blocks a trade. No global exchange rates.
-- Chest-inventory GUIs only — no anvil, signs or Bedrock forms. Every action is a simple tap, so Geyser players work the same way.
-- Paginated shop lists and item grids, payment selector, 1/8/64/Max/Custom quantity buttons, chat-typed custom quantities with `cancel` and timeout.
-- Offline sellers are paid into a **collect box**; a full collect box refuses the sale instead of losing items. No tax, fee or sink.
-- Atomic main-thread trades with listing locks, full rollback, hopper/break/explosion/piston chest protection and an append-only transaction log.
-- Soft, reflective MaterialClaim and WorldGuard checks. Neither plugin is required.
+| Item | Value |
+|---|---|
+| Java | 21 (`JavaLanguageVersion.of(21)`) |
+| Paper API | `io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT` |
+| Repositories | `mavenCentral()` and `https://repo.papermc.io/repository/maven-public/` |
+| Build tool | Gradle wrapper 8.10.2 (`gradlew`, Kotlin DSL) |
+| Package style | one lowercase Java package per project; here `com.banglaverse.materialshop` |
+| Config handling | `saveDefaultConfig()` + commented `config.yml`, reloaded without restart |
+| `plugin.yml` | `api-version: '1.21'`, `${version}` expansion in resources |
+| GitHub Actions | `actions/checkout@v5`, `actions/setup-java@v5`, jar verification, `actions/upload-artifact@v6` |
+| License | GPL-3.0 `LICENSE` copied from MaterialClaim |
 
-## Requirements
-
-- Paper 26.3 (Banglaverse), built against the Paper **1.21.11** API (same as MaterialClaim).
-- Java **21** or newer.
-- GeyserMC/Floodgate optional, for Bedrock clients.
+Target server: Paper 26.3 (Banglaverse). Paper API and Adventure Components only: **no NMS, no reflection, no shaded libraries**.
 
 ## Install
 
-1. Download `MaterialShop-0.1.0.jar` from the [v0.1.0 release](https://github.com/Ahmed332009/MaterialShop/releases/tag/v0.1.0),
-   or from the `MaterialShop` artifact of a green [Build workflow run](../../actions).
+1. Download `MaterialShop-0.1.0.jar` from the `MaterialShop` artifact of a green
+   [Build workflow run](../../actions), or from a release.
 2. Put it in `plugins/` and restart the server.
-3. Edit `plugins/MaterialShop/config.yml` and `plugins/MaterialShop/messages.yml`.
-4. Run `/shopadmin reload` to apply changes without a restart.
+3. Edit `plugins/MaterialShop/config.yml` and `messages.yml`, then `/shopadmin reload`.
 
-Data lives in `plugins/MaterialShop/shops.yml`; trades are appended to
-`plugins/MaterialShop/logs/transactions.log` (rotated by day and by size).
+Data is stored atomically in `plugins/MaterialShop/data.yml` (write tmp, then move). Trades append to
+`plugins/MaterialShop/logs/transactions.log`, rotated by size.
+
+## How the market works
+
+- `/shop` opens the main menu: **Market**, **Server shop**, **My listings**, **Collect box**,
+  **Create chest shop** and **My chest shops** (the last two only when chest shops are enabled).
+- **Market** shows every active player listing with category tabs, pagination and newest/name sorting.
+  Categories come from the `categories` section of config.yml; named/custom-model items go to Custom items.
+- **My listings → New listing** opens the setup menu. Put the sale item in the marked slot (its stack size
+  is one purchase unit), put up to four payment stacks in the payment slots (each is one payment option),
+  choose stock units and confirm. Stock is taken into plugin escrow, so listings work while the seller is offline.
+- Clicking a listing opens the purchase screen: **You give / You get**, payment selector, 1/8/64/Max,
+  Custom quantity (chat prompt with `cancel` and timeout) and Confirm.
+- Payments go to the seller's collect box. Sellers cannot buy their own listings.
+- A seller can add stock, change each payment price, or cancel a listing. Cancelling (and optional expiry)
+  returns escrow to the collect box.
+
+Server shops are created with `/shopadmin create [name]`; they have infinite stock and consume payments.
+A villager tagged with `/shopadmin npc <shop id>` opens its shop on a simple tap.
+
+Chest shops are created with `/shop chest create [name]` while looking at a chest or barrel. Stock stays in
+the container; other players tapping the container open the shop GUI, while the owner opens it normally.
+Containers are protected from break, hoppers, explosions, pistons and adjacent double chests. Creation fires
+a simulated `BlockBreakEvent` through the small `ClaimHook` class so land-claim plugins can veto it.
 
 ## Commands
 
 | Command | Description |
 |---|---|
-| `/shop` | Main chest menu: admin shops, player shops, my shops, collect box |
-| `/shop create [name]` | Hold the item to sell, target a chest or place one; then set payments in the editor |
-| `/shop list` | Paginated list of your shops |
-| `/shop collect` | Collect everything waiting in your collect box |
+| `/shop`, `/ms`, `/materialshop` | Main menu |
+| `/shop list` | Your listings |
+| `/shop collect` | Collect box |
 | `/shop help` | In-game help |
-| `/shopadmin create [name]` | Create an admin shop at your target (held item becomes its first listing) |
-| `/shopadmin edit [id]` | Edit an admin shop by id, or the shop you are looking at |
-| `/shopadmin remove <id>` | Remove an admin shop (its earnings are returned to you) |
-| `/shopadmin collect` | Collect admin-shop earnings |
-| `/shopadmin log` | Show recent trades in a chest menu |
+| `/shop chest create [name]` | Chest shop (only if enabled) |
+| `/shopadmin create [name]` | Create a server shop and add its first listing |
+| `/shopadmin remove <id>` | Remove a server shop |
+| `/shopadmin edit <id>` | Edit server-shop listings |
+| `/shopadmin npc <id>` | Tag the villager you are looking at |
+| `/shopadmin list` | Server shop ids |
 | `/shopadmin reload` | Reload config and messages |
+| `/shopadmin log` | Recent trades |
 
-`/materialshop` and `/ms` are aliases of `/shopadmin`. All commands have tab completion for
-subcommands and shop ids.
+All commands have tab completion for subcommands and shop ids.
 
 ## Permissions
 
-| Permission | Default | Meaning |
-|---|---|---|
-| `materialshop.use` | true | Open `/shop` and trade |
-| `materialshop.create` | true | Create player shops |
-| `materialshop.collect` | true | Open the collect box |
-| `materialshop.limit.<n>` | false | Raise the shop limit to `n` (highest matching number wins) |
-| `materialshop.admin` | op | `/shopadmin`, admin shop editing, manage any shop |
-| `materialshop.admin.bypass` | op | Ignore shop limits, chest and territory protections |
+| Permission | Default |
+|---|---|
+| `materialshop.use` | true |
+| `materialshop.create` | true |
+| `materialshop.collect` | true |
+| `materialshop.limit.<n>` | false (chest-shop limit) |
+| `materialshop.admin` | op |
+| `materialshop.admin.bypass` | op |
 
 ## Configuration
 
-`config.yml` defaults: `shop-limit: 5`, `collect-box-rows: 6`, `chat-timeout-seconds: 30`,
-payment blacklist (air, bedrock, barrier, command blocks, debug stick, spawn eggs, structure blocks and other
-unobtainables), optional payment whitelist, an optional `material-values` table,
-`fairness.warn-ratio: 4.0`, log rotation at 5 MB, and toggles for the MaterialClaim / WorldGuard hooks.
-Every key is commented and has example entries. `language-file: messages.yml` chooses the message file;
-every GUI title, button name and lore line lives there. Reload with `/shopadmin reload`.
+| Key | Default | Meaning |
+|---|---|---|
+| `shop-limit` | 5 | Chest shops per player |
+| `max-listings` | 20 | Market listings per player |
+| `listing-expiry-days` | 0 | Optional expiry (0 = off) |
+| `max-quantity` | 2304 | Hard cap per purchase |
+| `collect-box-capacity` | 45 | Stacks per collect box |
+| `prompt-timeout-seconds` | 30 | Chat prompt timeout |
+| `payment-blacklist`, `payment-whitelist-enabled`, `payment-whitelist` | see file | Payment rules; server shops ignore them |
+| `material-values`, `fairness-ratio` | see file | Warning only, never a block |
+| `categories` | 10 tabs | Material-to-category mapping |
+| `chest-shops.enabled` | true | Hides all chest-shop UI and commands when false |
+| `logging.enabled`, `logging.rotate-megabytes` | true, 5 | Transaction log |
+| `language-file` | messages.yml | Every GUI string lives here (`&` color codes, no emojis) |
 
 ## Decisions made where the brief was silent
 
-- Payments always go into the **collect box**, whether the seller is online or offline. This keeps one safe path and means no payment is ever lost to a full inventory; both owner and staff collect with one tap.
-- Admin shop earnings go to a **staff-collectable admin box**, never to a void/sink. Removing an admin shop returns its earnings to the staff member.
-- Storage is **YAML with Bukkit's ItemStack serialization**, matching MaterialClaim (which uses YAML, not SQLite).
-- Package name is `dev.materialshop` (lowercase), plugin.yml uses the same `api-version: '1.21'` as MaterialClaim.
-- A linked shop entity can be any living entity (villager, NPC) identified by UUID; linking is done from the editor while looking at it.
-- One payment option is 1–64 items; Max quantity is capped at 2304 (36 stacks of 64) so a trade stays one atomic inventory operation. Custom quantities are validated against stock, payment and free space.
-- Shop creation requires holding the sale item at the time the chest is targeted or placed.
+- Escrow lives in `data.yml` as full serialized ItemStacks, not in a chest; one escrow stack is one purchase unit.
+- Payment samples placed in the setup menu are copied as templates and returned to the player on confirm.
+- Server-shop payments are consumed (no collect box) because the brief explicitly allows this for server shops; player and chest-shop trades have no fee or sink.
+- The old WorldGuard/reflection hook from the earlier build was removed: this version uses only the simulated-break hook, which lets MaterialClaim and other claim plugins veto chest shop creation.
+- Drag is cancelled in all menus, including setup slots; simple taps cover both Java and Geyser.
+- Setup prices, stock units, custom quantities and shop names use chat prompts, never anvil GUIs or signs.
+- The jar version stays `0.1.0` as requested. The previously published `v0.1.0` release contains the earlier chest-centred build; this marketplace rebuild should get a new release tag.
 
 ## Screenshots
 
-*Screenshots will be added after the first live server test.* Put Java and Bedrock captures of the main menu,
-an admin shop, a purchase screen and a collect box in `docs/screenshots/` and link them here.
+*To be added after a live server test.* Put Java and Bedrock captures in `docs/screenshots/` and link them here.
 
 ## Manual test checklist
 
-These are the acceptance checks for 0.1.0. They need a Paper server; the GitHub build only verifies compilation.
-
-- [ ] **Normal trade:** admin shop with one payment option; buy 1, confirm, item and payment amounts are exact.
-- [ ] **Multiple payment options:** listing with 3 options; switching options changes what is taken; all 4 options editable.
-- [ ] **Custom quantity:** chat prompt accepts a number, `cancel` aborts, and the timeout message appears after the configured delay.
-- [ ] **Max quantity:** stops at the smaller of stock, affordable payment and free inventory space; no partial transfer.
-- [ ] **Full inventory:** trade is refused with the configured message; buyer payment and shop stock are untouched.
-- [ ] **Offline seller:** player shop sale credits the collect box; owner collects with `/shop collect` or the main-menu button.
-- [ ] **Full collect box:** sale is refused with `collect-full`; nothing is taken from the buyer.
-- [ ] **Simultaneous buyers:** two players click the same last listing; exactly one succeeds, the other gets a refusal.
-- [ ] **Restart persistence:** named/enchanted/custom-model items and a backpack-style NBT item survive restart and still match exactly.
-- [ ] **Named and enchanted items:** payment template with a display name and enchants only accepts the exact same item.
-- [ ] **Backpack items:** a ProbablyBackpacks backpack (or other NBT container) transfers with its data intact.
-- [ ] **Bedrock tap-only:** with Geyser, all menus, payment selection, quantity buttons, collect and confirm work by tapping; no right-click or sign is needed.
-- [ ] **Protection:** another player cannot open, break or hopper-drain a player-shop chest; explosions and pistons cannot move it.
-- [ ] **Self-trade and limits:** owner cannot buy from own shop; sixth shop is refused unless `materialshop.limit.6` is held.
-- [ ] **Transaction log:** each trade appends one line to `logs/transactions.log`; rotation creates a dated file.
+- [ ] **Normal trade:** list an item with one payment, buy 1, confirm; exact item and payment amounts.
+- [ ] **Two payment options:** list two payment slots; each option can be selected and charges the right item.
+- [ ] **Custom quantity:** chat prompt accepts a number; `cancel` and timeout both abort safely.
+- [ ] **Max:** stops at the smaller of stock, affordable payment and free inventory space.
+- [ ] **Full inventory:** trade refused with `no-room`; payment and escrow untouched.
+- [ ] **Offline seller:** seller logs out; listing still sells and payment reaches the collect box.
+- [ ] **Buying from your own listing:** refused with `self-buy`.
+- [ ] **Two buyers in a row:** both complete; no duplicated or missing escrow units.
+- [ ] **Restart persistence:** listings, escrow and collect boxes survive a restart with full item data.
+- [ ] **Named and enchanted item:** only `isSimilar` items are accepted as payment or bought.
+- [ ] **Backpack item:** a ProbablyBackpacks backpack keeps its NBT through listing, sale and collect.
+- [ ] **Cancel listing returns escrow:** remaining units move to the collect box.
+- [ ] **Expiry:** with `listing-expiry-days: 1`, an expired listing returns escrow.
+- [ ] **Bedrock tap-only:** every menu action, including setup slots and custom quantity, works with taps.
+- [ ] **Chest protection:** hoppers in/out, explosions, pistons and an adjacent chest cannot take or move shop stock.
+- [ ] **Simulated break hook:** with MaterialClaim installed, a claimed block rejects `/shop chest create`.
 
 ## Build
 
 ```sh
 ./gradlew build
-# jar: build/libs/MaterialShop-0.1.0.jar
+# build/libs/MaterialShop-0.1.0.jar
 ```
 
-The GitHub Actions workflow builds with Java 21, verifies that `plugin.yml` has an expanded version and that
-the jar contains compiled classes, then uploads the jar as the `MaterialShop` artifact.
+GitHub Actions builds with Java 21, checks the jar contents and expanded `plugin.yml`, then uploads the
+`MaterialShop` artifact. Pushing a `v*` tag publishes a GitHub Release with the jar attached.
 
 ## License
 

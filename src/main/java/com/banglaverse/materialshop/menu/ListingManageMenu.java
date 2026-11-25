@@ -136,7 +136,12 @@ public final class ListingManageMenu extends MenuBase {
             return;
         }
         if (listing.source() == Listing.Source.CHEST) {
-            plugin.chests().close(plugin.data().shop(listing.shopId()));
+            var chestShop = plugin.data().shop(listing.shopId());
+            if (chestShop != null) {
+                plugin.chests().close(chestShop);
+            } else {
+                plugin.data().removeListing(listingId);
+            }
             plugin.msg().send(player, "chest-closed");
             new com.banglaverse.materialshop.menu.ChestShopListMenu(plugin, player).open();
             return;
